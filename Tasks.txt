@@ -1,0 +1,8 @@
+ParseTransactions
+- Map<String, BigDecimal>
+- getTotalSavings
+- getTotalIncome
+- getTotalExpenses
+- getTopExpense
+
+Report
