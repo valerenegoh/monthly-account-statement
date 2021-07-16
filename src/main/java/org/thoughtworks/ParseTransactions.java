@@ -1,6 +1,7 @@
 package org.thoughtworks;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.Map;
 
 public class ParseTransactions {
@@ -14,29 +15,17 @@ public class ParseTransactions {
     }
 
     public BigDecimal getTotalIncome() {
-        BigDecimal totalIncome = BigDecimal.ZERO;
-        for (BigDecimal value: transactions.values()) {
-            if (value.signum() == 1) {
-                totalIncome = totalIncome.add(value);
-            }
-        }
+        BigDecimal totalIncome = transactions.values().stream().
+                filter(x -> x.signum() == 1).reduce(BigDecimal.ZERO, BigDecimal::add);
         setTotalIncome(totalIncome);
         return totalIncome;
     }
 
     public BigDecimal getTotalExpense() {
-        BigDecimal totalExpense = BigDecimal.ZERO;
-        for (BigDecimal value: transactions.values()) {
-            if (value.signum() == -1) {
-                totalExpense = totalExpense.add(value);
-            }
-        }
+        BigDecimal totalExpense = transactions.values().stream().
+                filter(x -> x.signum() == -1).reduce(BigDecimal.ZERO, BigDecimal::add);
         setTotalExpense(totalExpense.abs());
         return totalExpense.abs();
-    }
-
-    public Map<String, BigDecimal> getTransactions() {
-        return transactions;
     }
 
     public void setTransactions(Map<String, BigDecimal> transactions) {
@@ -44,17 +33,10 @@ public class ParseTransactions {
     }
 
     public void getTopExpense() {
-        BigDecimal maximumExpenseValue = BigDecimal.ZERO;
-        String maximumExpenseCategory = "";
-        for (String category: transactions.keySet()) {
-            BigDecimal value = transactions.get(category);
-            if (value.signum() == -1 && value.compareTo(maximumExpenseValue) == -1) {
-                maximumExpenseValue = value;
-                maximumExpenseCategory = category;
-            }
-        }
+        String maximumExpenseCategory = Collections.min(transactions.entrySet(), Map.Entry.comparingByValue()).getKey();
+
         setTopExpenseCategory(maximumExpenseCategory);
-        setTopExpenseValue(maximumExpenseValue.abs());
+        setTopExpenseValue(transactions.get(maximumExpenseCategory).abs());
     }
 
     public String getTopExpenseCategory() {
